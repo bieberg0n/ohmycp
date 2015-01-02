@@ -1,27 +1,32 @@
-cpv() {
-if ! type -P pv >/dev/null;then
-  echo need pv >&2
+ohmygcp() {
+if ! type -P gcp >/dev/null;then
+  echo need gcp >&2
   return 1
 fi
 case $# in
   0)
-	echo -e "cp: 缺少了文件操作数。" >&2
+	echo -e "gcp: 缺少了文件操作数。" >&2
 	return 1
 	;;
   1)
-	echo -e "cp: 在\"$1\" 后缺少了要操作的目标文件。" >&2
+	echo -e "gcp: 在\"$1\" 后缺少了要操作的目标文件。" >&2
 	return 1
 	;;
   2)
 	  if [ ! -e "$1" ];then
-		  echo "cp: 无法获取\"$1\" 的文件状态(stat): 没有那个文件或目录"
+		  echo "gcp: 无法获取\"$1\" 的文件状态(stat): 没有那个文件或目录"
 		  return 1
-	  elif [ -e "$2" ]||[[ "$2" != *"/"* ]];then
-		  gcp -fvr $@
-	  elif [ ! -d "$(echo ${2%/*})" ];then
+	  elif [[ "$2" == *"/"* ]]&&[ ! -d "$(echo ${2%/*})" ];then
+		  echo "gcp: 无法创建普通文件"$2": 没有那个文件或目录"
+		  return 1
+	  #elif [ -e "$2" ]||[[ "$2" != *"/"* ]];then
+		  #gcp -fvr $@
+	  #elif [ ! -d "$(echo ${2%/*})" ];then
 		  #mkdir $(echo ${2%/*})
-		  echo "cp: 无法创建普通文件"$2": 没有那个文件或目录"
-		  return 1
+		  #echo "gcp: 无法创建普通文件"$2": 没有那个文件或目录"
+		  #return 1
+	  else
+		  gcp -fvr $@
 	  fi
 	;;
   *)
@@ -29,13 +34,14 @@ case $# in
 	  args=("$@")
 	  for (( i=0;i<=$(( $#-2 ));i++ ));do
 		  if [ "${args[$i]}" != "-v" ]&&[ ! -e "${args[$i]}" ];then
-			  echo "cp: 无法获取\"${args[$i]}\" 的文件状态(stat): 没有那个文件或目录"
+			  echo "gcp: 无法获取\"${args[$i]}\" 的文件状态(stat): 没有那个文件或目录"
 			  return 1
 		  fi
 	  done
 	  o=${args[$#-1]}
-	  if [ ! -e "${args[$#-1]}" ]&&[ ! -d "$(echo ${o%/*})" ];then
-		  mkdir $(echo ${o%/*})
+	  if [ ! -d "$o" ];then
+		  echo "gcp: 目标\"$o\" 不是目录"
+		  return 1
 	  fi
 	  #if [[ -f "$1" ]];then
 	  #rsync=1
@@ -125,4 +131,4 @@ case $# in
 esac
 }
 
-cpv "$@"
+ohmygcp "$@"

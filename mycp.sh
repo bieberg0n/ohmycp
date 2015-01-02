@@ -13,10 +13,16 @@ case $# in
 	return 1
 	;;
   2)
-	  if [ -e "$1" ]&&[ ! -e "$2" ]&&[ ! -d "$(echo ${2%/*})" ];then
-		  mkdir $(echo ${2%/*})
+	  if [ ! -e "$1" ];then
+		  echo "cp: 无法获取\"$1\" 的文件状态(stat): 没有那个文件或目录"
+		  return 1
+	  elif [ -e "$2" ]||[[ "$2" != *"/"* ]];then
+		  gcp -fvr $@
+	  elif [ ! -d "$(echo ${2%/*})" ];then
+		  #mkdir $(echo ${2%/*})
+		  echo "cp: 无法创建普通文件"$2": 没有那个文件或目录"
+		  return 1
 	  fi
-	  gcp -fvr $@
 	;;
   *)
 	  local args dest

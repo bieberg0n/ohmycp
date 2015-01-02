@@ -3,6 +3,7 @@ if ! type -P gcp >/dev/null;then
   echo need gcp >&2
   return 1
 fi
+#mkfifo -m 777 npipe
 case $# in
   0)
 	echo -e "gcp: 缺少了文件操作数。" >&2

@@ -1,8 +1,4 @@
 ohmygcp() {
-if ! type -P gcp >/dev/null;then
-  echo need gcp >&2
-  return 1
-fi
 case $# in
   0|1)
 	  cp -v $@
